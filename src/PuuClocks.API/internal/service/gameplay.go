@@ -54,7 +54,7 @@ func (g gameplay) ProcessAction(game *models.Game, socketID uuid.UUID, action ac
 		return true, err
 	}
 
-	g.outcomeEvaluator.ShouldPunishOrAward()
+	g.outcomeEvaluator.ShouldPunishOrAward(game, socketID, action, broadcast)
 
 	return g.shouldCloseGame(game, socketID, action)
 }
