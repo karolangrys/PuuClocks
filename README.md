@@ -7,4 +7,4 @@ Browser online board game based on the rules of the [Crazy Time](https://boardga
 - Backend: Go
 - Frontend: React
 
-### The game will be deployed in a playable state 🚧🚧🚧🚧🚧
+### The game will be deployed in a playable state 🚧🚧🚧🚧
