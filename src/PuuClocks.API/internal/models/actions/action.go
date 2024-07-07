@@ -1,5 +1,7 @@
 package actions
 
+//go:generate mockgen -source=action.go -destination=action_mock.go -package actions
+
 import (
 	"puuclocks/internal/models"
 

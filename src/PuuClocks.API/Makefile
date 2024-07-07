@@ -3,3 +3,9 @@ lint:
 
 lint-fix:
 	golangci-lint run ./... --fix
+
+mocks:
+	go generate ./...
+
+test:
+	ginkgo ./...
