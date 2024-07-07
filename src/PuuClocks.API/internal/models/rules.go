@@ -17,7 +17,7 @@ func (r Rule) Occure(g *Game, c *Card) (bool, error) {
 }
 
 func (r Rule) Then(g *Game) error {
-	then, ok := RulesThen[r.ThenID]
+	then, ok := ThenRules[r.ThenID]
 	if !ok {
 		return fmt.Errorf("couldn't find then rule with %d id", r.ThenID)
 	}
@@ -28,7 +28,7 @@ func (r Rule) Then(g *Game) error {
 }
 
 func (r Rule) RetrieveThen() (func(*Game), error) {
-	then, ok := RulesThen[r.ThenID]
+	then, ok := ThenRules[r.ThenID]
 	if !ok {
 		return nil, fmt.Errorf("couldn't find then rule with %d id", r.ThenID)
 	}

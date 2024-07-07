@@ -12,6 +12,7 @@ var _ = Describe("RulesWhen", func() {
 	var (
 		game *models.Game
 	)
+	
 	Context("test single rule", func() {
 		Context("called time card", func() {
 			BeforeEach(func() {

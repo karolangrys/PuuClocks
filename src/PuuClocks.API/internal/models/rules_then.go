@@ -1,14 +1,14 @@
 package models
 
-var RulesThen = map[int]func(*Game){
-	1: SynchronizationRule,
-	2: ReverseDirection,
+var ThenRules = map[int]func(*Game){
+	1: SynchronizationThenRule,
+	2: ReverseDirectionThenRule,
 }
 
-func SynchronizationRule(g *Game) {
+func SynchronizationThenRule(g *Game) {
 	g.ExpectedSynchronization = true
 }
 
-func ReverseDirection(g *Game) {
+func ReverseDirectionThenRule(g *Game) {
 	g.Direction = !g.Direction
 }
