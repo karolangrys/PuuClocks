@@ -6,12 +6,10 @@ import (
 	"puuclocks/internal/models/actions"
 
 	"slices"
-
-	"github.com/google/uuid"
 )
 
 type Validator interface {
-	ValidateAction(game *models.Game, socketID uuid.UUID, action actions.Action) (bool, error)
+	ValidateAction(game *models.Game, action actions.Action) (bool, error)
 }
 
 type validator struct{}
@@ -20,7 +18,7 @@ func newValidate() Validator {
 	return &validator{}
 }
 
-func (v validator) ValidateAction(game *models.Game, socketID uuid.UUID, action actions.Action) (bool, error) {
+func (v validator) ValidateAction(game *models.Game, action actions.Action) (bool, error) {
 	if action.GetType() == actions.ActionTypeEndOfTurn {
 		return true, nil
 	}
@@ -31,8 +29,7 @@ func (v validator) ValidateAction(game *models.Game, socketID uuid.UUID, action 
 			return false, nil
 		}
 
-	case models.GameStateAction:
-	case models.GameStateSynchronization:
+	case models.GameStateAction, models.GameStateSynchronization:
 		allowedActions := []actions.ActionType{actions.ActionTypeReportError, actions.ActionTypeSynchronizationRule}
 		if !slices.Contains(allowedActions, action.GetType()) {
 			return false, nil
