@@ -32,6 +32,18 @@ const (
 	GameStateSynchronization
 )
 
+func (g GameState) ToString() string {
+	switch g {
+	case GameStateAction:
+		return "Action"
+	case GameStateReportTime:
+		return "Report Time"
+	case GameStateSynchronization:
+		return "Synchronization"
+	}
+	return ""
+}
+
 type GameDirection bool
 
 const (
