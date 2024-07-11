@@ -29,19 +29,19 @@ func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action 
 	}
 
 	var player *models.Player
+	for _, p := range game.Players {
+		if p != nil && p.ConnectionID == socketID {
+			player = p
+		}
+	}
+
+	if player == nil {
+		return fmt.Errorf("couldn't obtain player with %d connection to determine who did action", socketID)
+	}
+
+	game.LastActionCaller = player
+
 	if game.AreRulesBroken {
-		for _, p := range game.Players {
-			if p != nil && p.ConnectionID == socketID {
-				player = p
-			}
-		}
-
-		if player == nil {
-			return fmt.Errorf("couldn't obtain player with %d connection to determine who did action", socketID)
-		}
-
-		game.LastActionCaller = player
-
 		return nil
 	}
 
@@ -53,7 +53,7 @@ func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action 
 			return nil
 		}
 	case actions.ActionTypeReportTime:
-		if game.Players[game.Turn] == player {
+		if game.Players[game.Turn] == player && *action.GetData().ReportedTime == game.ExpectedTime{
 			return nil
 		}
 	}
