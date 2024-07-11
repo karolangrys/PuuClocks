@@ -27,29 +27,53 @@ func newActionExecuter(redis repository.Redis) ActionExecutor {
 func (a actionExecutor) Execute(game *models.Game, socketID uuid.UUID, action actions.Action) error {
 	switch action.GetType() {
 	case actions.ActionTypeReportTime:
-		var function func(*models.Game)
+		var functionToApply func(*models.Game)
+		var overload bool
+
 		p := a.findPlayerBySocketID(game, socketID)
 		if p == nil {
-			return fmt.Errorf("couldn't player who reported time with %d connection ID in %d game", socketID, game.ID)
+			return fmt.Errorf("couldn't find player who reported time with %d connection ID in %d game", socketID, game.ID)
 		}
+
+		game.LastCalledTime = action.GetData().ReportedTime
 
 		drawedCard, err := a.drawCard(game, p)
 		if err != nil {
 			return err
 		}
 
-		function, err = a.customRules(game, drawedCard)
+		functionToApply, overload, err = a.getRuleToApply(game, drawedCard)
 		if err != nil {
 			log.Log.Warn(err)
 		}
-		if err != nil && function != nil {
-			function(game)
+
+		if overload {
+			a.changeTurn(game, 1)
+			a.changeTime(game, 1)
+		} else if functionToApply != nil {
+			functionToApply(game)
+			if game.TurnDirection == models.GameDirectionClockWise {
+				a.changeTurn(game, 1)
+			} else {
+				a.changeTurn(game, -1)
+			}
 		} else {
-			a.defaultRule(game)
+			if game.TurnDirection == models.GameDirectionClockWise {
+				a.changeTurn(game, 1)
+			} else {
+				a.changeTurn(game, -1)
+			}
+
+			if game.TimeDirection == models.GameDirectionClockWise {
+				a.changeTime(game, 1)
+			} else {
+				a.changeTime(game, -1)
+			}
 		}
 
 		game.DiscardedCards = append(game.DiscardedCards, drawedCard)
 		game.State = models.GameStateAction
+
 	case actions.ActionTypeSynchronizationRule:
 
 	}
@@ -59,16 +83,20 @@ func (a actionExecutor) Execute(game *models.Game, socketID uuid.UUID, action ac
 
 func (a actionExecutor) drawCard(game *models.Game, reporter *models.Player) (models.Card, error) {
 	var card *models.Card
+	var player *models.Player
 
 	for _, p := range game.Players {
 		if p == reporter {
-			card, p.PlayingHand = &p.PlayingHand[0], p.PlayingHand[1:]
+			player = p
+			break
 		}
 	}
 
-	if card == nil {
-		return models.Card{}, fmt.Errorf("couldn't draw card from player with %d connection", reporter.ConnectionID)
+	if len(player.PlayingHand) == 0 {
+		return models.Card{}, fmt.Errorf("player with %d connection, dont have any cards", reporter.ConnectionID)
 	}
+
+	card, player.PlayingHand = &player.PlayingHand[0], player.PlayingHand[1:]
 
 	return *card, nil
 }
@@ -83,13 +111,13 @@ func (a actionExecutor) findPlayerBySocketID(game *models.Game, socketID uuid.UU
 	return nil
 }
 
-func (a actionExecutor) customRules(game *models.Game, card models.Card) (func(*models.Game), error) {
+func (a actionExecutor) getRuleToApply(game *models.Game, card models.Card) (func(*models.Game), bool, error) {
 	var f func(*models.Game)
 	occured := 0
 	for _, rule := range game.Rules {
 		doesOccure, err := rule.Occure(game, &card)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 
 		if doesOccure {
@@ -97,29 +125,42 @@ func (a actionExecutor) customRules(game *models.Game, card models.Card) (func(*
 		}
 
 		if occured == 1 {
-			f, _ = rule.RetrieveThen()
+			f, err = rule.RetrieveThen()
+			if err != nil {
+				return nil, false, err
+			}
 		}
 
 		if occured > 1 {
-			return nil, nil
+			return nil, true, nil
 		}
 	}
 
-	return f, nil
+	return f, false, nil
 }
 
-func (a actionExecutor) defaultRule(game *models.Game) {
-	var exp float64
-	if game.Direction == models.GameDirectionClockWise {
-		exp = game.ExpectedTime + 1
-		if exp > 12 {
-			exp -= 12
-		}
-	} else {
-		exp = game.ExpectedTime - 1
-		if exp < 0 {
-			exp += 12
-		}
+func (a actionExecutor) changeTurn(game *models.Game, howMany int) {
+	var turn int
+
+	turn += howMany
+	if howMany < 0 {
+		turn = len(game.Players) - 1
 	}
+	turn %= len(game.Players)
+
+	game.Turn = turn
+}
+
+func (a actionExecutor) changeTime(game *models.Game, howMuch float64) {
+	var exp float64
+
+	exp = game.ExpectedTime + howMuch
+	if exp > 12 {
+		exp -= 12
+	}
+	if exp < 0 {
+		exp += 12
+	}
+
 	game.ExpectedTime = exp
 }

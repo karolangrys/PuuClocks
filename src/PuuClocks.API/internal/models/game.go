@@ -10,7 +10,8 @@ type Game struct {
 
 	AreRulesBroken bool
 	Turn           int
-	Direction      GameDirection
+	TimeDirection  GameDirection
+	TurnDirection  GameDirection
 
 	LastCalledTime   *float64
 	LastActionCaller *Player

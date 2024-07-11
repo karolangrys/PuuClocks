@@ -20,11 +20,11 @@ var _ = Describe("RulesThen", func() {
 	It("reverse direction", func() {
 		// given
 		game := models.Game{
-			Direction: models.GameDirectionClockWise,
+			TimeDirection: models.GameDirectionClockWise,
 		}
 		// when
-		models.ReverseDirectionThenRule(&game)
+		models.ReverseTimeDirectionThenRule(&game)
 		// then
-		Expect(game.Direction).To(Equal(models.GameDirectionCounterClockWise))
+		Expect(game.TimeDirection).To(Equal(models.GameDirectionCounterClockWise))
 	})
 })
