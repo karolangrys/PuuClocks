@@ -35,7 +35,7 @@ func newGameplay(services gamePlayServices) Gameplay {
 }
 
 func (g gameplay) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error) {
-	canBePerformed, err := g.validator.ValidateAction(game, socketID, action)
+	canBePerformed, err := g.validator.ValidateAction(game, action)
 	if err != nil {
 		return true, err
 	}
