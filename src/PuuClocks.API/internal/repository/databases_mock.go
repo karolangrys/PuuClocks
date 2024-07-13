@@ -53,6 +53,20 @@ func (mr *MockDatabasesMockRecorder) DB() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DB", reflect.TypeOf((*MockDatabases)(nil).DB))
 }
 
+// Health mocks base method.
+func (m *MockDatabases) Health() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Health")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Health indicates an expected call of Health.
+func (mr *MockDatabasesMockRecorder) Health() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Health", reflect.TypeOf((*MockDatabases)(nil).Health))
+}
+
 // RedisDB mocks base method.
 func (m *MockDatabases) RedisDB() Redis {
 	m.ctrl.T.Helper()

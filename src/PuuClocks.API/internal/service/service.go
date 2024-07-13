@@ -10,13 +10,15 @@ type Service interface {
 	ActionExecutor() ActionExecutor
 	FoulChecker() FoulChecker
 	OutcomeEvaluator() OutcomeEvaluator
+
+	Health() error
 }
 
 type service struct {
 	gameplay         Gameplay
-	validator         Validator
-	actionExecutor           ActionExecutor
-	foulChecker         FoulChecker
+	validator        Validator
+	actionExecutor   ActionExecutor
+	foulChecker      FoulChecker
 	outcomeEvaluator OutcomeEvaluator
 }
 
@@ -27,14 +29,14 @@ func NewService(databases repository.Databases) Service {
 	actionExecutor := newActionExecuter(databases.RedisDB())
 
 	return &service{
-		actionExecutor:           actionExecutor,
-		foulChecker:         foulChecker,
-		validator:         validator,
+		actionExecutor:   actionExecutor,
+		foulChecker:      foulChecker,
+		validator:        validator,
 		outcomeEvaluator: outcomeEvaluator,
 		gameplay: newGameplay(gamePlayServices{
 			validator:        validator,
 			actionExecutor:   actionExecutor,
-			foulChecker:     foulChecker,
+			foulChecker:      foulChecker,
 			outcomeEvaluator: outcomeEvaluator,
 		}),
 	}
@@ -58,4 +60,8 @@ func (s *service) FoulChecker() FoulChecker {
 
 func (s *service) OutcomeEvaluator() OutcomeEvaluator {
 	return s.outcomeEvaluator
+}
+
+func (s *service) Health() error {
+	return nil
 }
