@@ -10,6 +10,7 @@ import (
 	"puuclocks/internal/sockets"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	gen_openapi "puuclocks/gen"
@@ -42,8 +43,8 @@ func main() {
 		LobbyManager: lobbyManager,
 	})
 	socket := server.NewSocketServer(server.SocketServerParameters{
-		Service: service,
-		Databases: databases,
+		Service:      service,
+		Databases:    databases,
 		LobbyManager: lobbyManager,
 	})
 
@@ -52,10 +53,22 @@ func main() {
 	gen_openapi.RegisterHandlers(r, rest)
 	socket.RegisterSocketHandlers(r)
 
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
+
 	httpServer := &http.Server{
 		Addr:              ":8080",
 		Handler:           r,
 		ReadHeaderTimeout: time.Second,
 	}
+
 	log.Log.DPanicln(httpServer.ListenAndServe())
 }
