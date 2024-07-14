@@ -26,7 +26,7 @@ func (v validator) ValidateAction(game *models.Game, action actions.Action) (boo
 		}
 
 	case models.GameStateAction, models.GameStateSynchronization:
-		allowedActions := []actions.ActionType{actions.ActionTypeReportError, actions.ActionTypeSynchronizationRule}
+		allowedActions := []actions.ActionType{actions.ActionTypeReportError, actions.ActionTypeSynchronization}
 		if !slices.Contains(allowedActions, action.GetType()) {
 			return false, nil
 		}

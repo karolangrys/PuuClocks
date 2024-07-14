@@ -4,8 +4,8 @@ type StartGame struct {
 	action
 }
 
-func (s StartGame) Validate(data string) *action {
-	if data != string(ActionTypeStartGame) {
+func (s StartGame) Validate(a action) *action {
+	if a.Type != ActionTypeStartGame || a.Data != nil {
 		return nil
 	}
 

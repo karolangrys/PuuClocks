@@ -9,19 +9,19 @@ func (r ReportTime) Validate(a action) *action {
 		return nil
 	}
 
-	if a.Data.ReportedTime == nil {
+	if a.Data == nil || a.Data.ReportedTime == nil {
 		return nil
 	}
 
 	parsedTime := *a.Data.ReportedTime
 
-	if parsedTime > 12 || parsedTime < 0 {
+	if parsedTime > 12 || parsedTime <= 0 {
 		return nil
 	}
 
 	return &action{
 		Type: ActionTypeReportTime,
-		Data: ActionData{
+		Data: &ActionData{
 			ReportedTime: &parsedTime,
 		},
 	}

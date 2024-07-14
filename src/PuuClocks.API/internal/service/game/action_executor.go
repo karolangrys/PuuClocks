@@ -69,7 +69,7 @@ func (a actionExecutor) Execute(game *models.Game, socketID uuid.UUID, action ac
 		game.DiscardedCards = append(game.DiscardedCards, drawedCard)
 		game.State = models.GameStateAction
 
-	case actions.ActionTypeSynchronizationRule:
+	case actions.ActionTypeSynchronization:
 
 	}
 

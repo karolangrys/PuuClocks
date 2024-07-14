@@ -47,7 +47,7 @@ var _ = Describe("Validator", Ordered, func() {
 		reportError.EXPECT().GetType().Return(actions.ActionTypeReportError).AnyTimes()
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 		startGame.EXPECT().GetType().Return(actions.ActionTypeStartGame).AnyTimes()
-		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronizationRule).AnyTimes()
+		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronization).AnyTimes()
 
 		validator = newValidator()
 	})

@@ -45,7 +45,7 @@ var _ = Describe("FoulChecker", func() {
 
 		reportError.EXPECT().GetType().Return(actions.ActionTypeReportError).AnyTimes()
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
-		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronizationRule).AnyTimes()
+		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronization).AnyTimes()
 
 		foulChecker = newFoulChecker()
 	})
@@ -220,7 +220,7 @@ var _ = Describe("FoulChecker", func() {
 				Turn:           0,
 				ExpectedTime:   expectedTime,
 			}
-			
+
 			// when
 			res := foulChecker.CheckForFaul(&game, playerUUID, reportTime)
 

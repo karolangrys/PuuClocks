@@ -43,7 +43,7 @@ func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action 
 	game.LastActionCaller = player
 
 	switch action.GetType() {
-	case actions.ActionTypeSynchronizationRule:
+	case actions.ActionTypeSynchronization:
 		if game.ExpectedSynchronization {
 			return nil
 		}
