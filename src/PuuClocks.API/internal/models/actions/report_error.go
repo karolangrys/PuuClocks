@@ -4,11 +4,7 @@ type ReportError struct {
 	action
 }
 
-func (r ReportError) Validate(data string) *action {
-	if data != string(ActionTypeReportTime) {
-		return nil
-	}
-
+func (r ReportError) Validate() *action {
 	return &action{
 		Type: ActionTypeReportError,
 	}

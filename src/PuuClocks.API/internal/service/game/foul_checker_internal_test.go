@@ -18,12 +18,10 @@ var _ = Describe("FoulChecker", func() {
 		databasesCtrl *gomock.Controller
 		databasesMock *repository.MockDatabases
 
-		endOfTurnCtrl           *gomock.Controller
 		reportErrorCtrl         *gomock.Controller
 		reportTimeCtrl          *gomock.Controller
 		synchronizationRuleCtrl *gomock.Controller
 
-		endOfTurn           *actions.MockAction
 		reportError         *actions.MockAction
 		reportTime          *actions.MockAction
 		synchronizationRule *actions.MockAction
@@ -37,17 +35,14 @@ var _ = Describe("FoulChecker", func() {
 
 		databasesMock.EXPECT().RedisDB().Return(nil).AnyTimes()
 
-		endOfTurnCtrl = gomock.NewController(GinkgoT())
 		reportErrorCtrl = gomock.NewController(GinkgoT())
 		reportTimeCtrl = gomock.NewController(GinkgoT())
 		synchronizationRuleCtrl = gomock.NewController(GinkgoT())
 
-		endOfTurn = actions.NewMockAction(endOfTurnCtrl)
 		reportError = actions.NewMockAction(reportErrorCtrl)
 		reportTime = actions.NewMockAction(reportTimeCtrl)
 		synchronizationRule = actions.NewMockAction(synchronizationRuleCtrl)
 
-		endOfTurn.EXPECT().GetType().Return(actions.ActionTypeEndOfTurn).AnyTimes()
 		reportError.EXPECT().GetType().Return(actions.ActionTypeReportError).AnyTimes()
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronizationRule).AnyTimes()
@@ -70,26 +65,6 @@ var _ = Describe("FoulChecker", func() {
 			}
 			// when
 			res := foulChecker.CheckForFaul(&game, uuid.Max, reportError)
-			// then
-			Expect(res).To(BeNil())
-			Expect(game.LastActionCaller).To(BeNil())
-			Expect(game.AreRulesBroken).To(Equal(false))
-		})
-
-		It("end of turn", func() {
-			// given
-			playerUUID := uuid.New()
-
-			players := []*models.Player{
-				{ConnectionID: uuid.Max},
-				{ConnectionID: playerUUID},
-			}
-
-			game := models.Game{
-				Players: players,
-			}
-			// when
-			res := foulChecker.CheckForFaul(&game, playerUUID, endOfTurn)
 			// then
 			Expect(res).To(BeNil())
 			Expect(game.LastActionCaller).To(BeNil())

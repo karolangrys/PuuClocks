@@ -19,7 +19,7 @@ func newFoulChecker() FoulChecker {
 }
 
 func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action actions.Action) error {
-	if action.GetType() == actions.ActionTypeReportError || action.GetType() == actions.ActionTypeEndOfTurn {
+	if action.GetType() == actions.ActionTypeReportError {
 		return nil
 	}
 

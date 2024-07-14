@@ -32,22 +32,6 @@ func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.U
 		}
 		o.punishPlayers(game, []*models.Player{player})		
 	}
-
-	if action.GetType() == actions.ActionTypeEndOfTurn{
-		switch game.State {
-		case models.GameStateReportTime:
-			o.punishPlayers(game, []*models.Player{game.Players[game.Turn]})
-		case models.GameStateSynchronization:
-			var players []*models.Player
-			for _, p := range game.Players {
-				if _, ok := game.Synchronization[p.ConnectionID]; ok == false {
-					players = append(players, p)
-				}
-			}
-
-			o.punishPlayers(game, players)
-		}
-	}
 }
 
 func (o outcomeEvaluator) punishPlayers(game *models.Game, players []*models.Player) {

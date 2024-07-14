@@ -1,35 +1,21 @@
 package actions
 
-import (
-	"fmt"
-	"strconv"
-	"strings"
-)
-
 type ReportTime struct {
 	action
 }
 
-func (r ReportTime) Validate(data string) *action {
-	d := strings.Split(data, "/")
-	if len(d) != 2 {
-		fmt.Println("Couldn't split")
+func (r ReportTime) Validate(a action) *action {
+	if a.Type != ActionTypeReportTime {
 		return nil
 	}
 
-	if d[0] != string(ActionTypeReportTime) {
-		fmt.Println("Incorrect type")
+	if a.Data.ReportedTime == nil {
 		return nil
 	}
 
-	parsedTime, err := strconv.ParseFloat(d[1], 64)
-	if err != nil {
-		fmt.Println("Wrong format: ", d[1])
-		return nil
-	}
+	parsedTime := *a.Data.ReportedTime
 
 	if parsedTime > 12 || parsedTime < 0 {
-		fmt.Println("Incorrect time")
 		return nil
 	}
 
