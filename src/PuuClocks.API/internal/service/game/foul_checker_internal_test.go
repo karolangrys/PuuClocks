@@ -1,4 +1,4 @@
-package service_test
+package game
 
 import (
 	"fmt"
@@ -11,7 +11,6 @@ import (
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
-	"puuclocks/internal/service"
 )
 
 var _ = Describe("FoulChecker", func() {
@@ -29,7 +28,7 @@ var _ = Describe("FoulChecker", func() {
 		reportTime          *actions.MockAction
 		synchronizationRule *actions.MockAction
 
-		foulChecker service.FoulChecker
+		foulChecker FoulChecker
 	)
 
 	BeforeEach(func() {
@@ -53,7 +52,7 @@ var _ = Describe("FoulChecker", func() {
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronizationRule).AnyTimes()
 
-		foulChecker = service.NewService(databasesMock).FoulChecker()
+		foulChecker = newFoulChecker()
 	})
 
 	Context("shouldn't execute instead return nil at once - ", func() {

@@ -1,4 +1,4 @@
-package service
+package game
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type Validator interface {
 
 type validator struct{}
 
-func newValidate() Validator {
+func newValidator() Validator {
 	return &validator{}
 }
 

@@ -3,8 +3,9 @@ package sockets
 import (
 	"fmt"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
-	"puuclocks/internal/service"
+
+	//	"puuclocks/internal/models/actions"
+	"puuclocks/internal/service/game"
 
 	"github.com/google/uuid"
 )
@@ -31,7 +32,7 @@ type lobby struct {
 	Clients map[Client]bool
 
 	Game     *models.Game
-	Gameplay service.Gameplay
+	Gameplay game.GameLoop
 
 	Settings Settings
 }
@@ -43,17 +44,17 @@ type Message struct {
 	Data     string
 }
 
-func NewLobby(gameplay service.Gameplay) Lobby {
+func NewLobby(gameplay game.GameLoop) Lobby {
 	id := uuid.New()
 
 	l := lobby{
 		ID: id,
 
-		Forward:   make(chan Message),
+		Forward:   make(chan Message, 10),
 		Join:      make(chan Client),
 		Leave:     make(chan Client),
 		Clients:   make(map[Client]bool),
-		Broadcast: make(chan string),
+		Broadcast: make(chan string, 10),
 
 		Gameplay: gameplay,
 	}
@@ -73,7 +74,8 @@ func (l *lobby) run() {
 			client.Close()
 		case msg := <-l.Forward:
 			fmt.Println("Action From: ", msg.SocketID, " Data: ", msg.Data)
-			action := actions.ValidateIfUserProvidedActionInstance(msg.Data)
+			l.Broadcast <- msg.Data
+			/*action := actions.ValidateIfUserProvidedActionInstance(msg.Data)
 			if action == nil {
 				fmt.Println("There was a error during valdiation")
 				break
@@ -81,7 +83,7 @@ func (l *lobby) run() {
 			_, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
 			if err != nil {
 
-			}
+			}*/
 		case msg := <-l.Broadcast:
 			for c, _ := range l.Clients {
 				c.SendMessage([]byte(msg))
@@ -99,6 +101,7 @@ func (l *lobby) ForwardMessage(msg Message) {
 }
 
 func (l *lobby) JoinLobby(c Client) {
+	fmt.Println("NEW USER JOINED")
 	if l.Owner == nil {
 		l.Owner = c
 	}

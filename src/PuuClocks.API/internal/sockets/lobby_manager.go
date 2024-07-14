@@ -1,13 +1,13 @@
 package sockets
 
 import (
-	"puuclocks/internal/service"
+	"puuclocks/internal/service/game"
 
 	"github.com/google/uuid"
 )
 
 type LobbyManager interface {
-	CreateLobby(gameplay service.Gameplay) Lobby
+	CreateLobby(gameLoop game.GameLoop) Lobby
 	FindLobby(uuid.UUID) Lobby
 }
 
@@ -21,7 +21,7 @@ func NewLobbyManager() LobbyManager {
 	}
 }
 
-func (l lobbyManager) CreateLobby(gameplay service.Gameplay) Lobby {
+func (l lobbyManager) CreateLobby(gameplay game.GameLoop) Lobby {
 	lobby := NewLobby(gameplay)
 	id := lobby.GetID()
 	l.Lobbies[id] = lobby

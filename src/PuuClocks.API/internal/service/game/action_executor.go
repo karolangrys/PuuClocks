@@ -1,11 +1,10 @@
-package service
+package game
 
 import (
 	"fmt"
 	"puuclocks/internal/log"
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
-	"puuclocks/internal/repository"
 
 	"github.com/google/uuid"
 )
@@ -14,14 +13,10 @@ type ActionExecutor interface {
 	Execute(game *models.Game, socketID uuid.UUID, action actions.Action) error
 }
 
-type actionExecutor struct {
-	redis repository.Redis
-}
+type actionExecutor struct{}
 
-func newActionExecuter(redis repository.Redis) ActionExecutor {
-	return &actionExecutor{
-		redis: redis,
-	}
+func newActionExecuter() ActionExecutor {
+	return &actionExecutor{}
 }
 
 func (a actionExecutor) Execute(game *models.Game, socketID uuid.UUID, action actions.Action) error {

@@ -1,4 +1,4 @@
-package service_test
+package game
 
 import (
 	"fmt"
@@ -11,7 +11,6 @@ import (
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
-	"puuclocks/internal/service"
 )
 
 var _ = Describe("ActionExecutor", func() {
@@ -23,7 +22,7 @@ var _ = Describe("ActionExecutor", func() {
 
 		reportTime *actions.MockAction
 
-		actionExecutor service.ActionExecutor
+		actionExecutor ActionExecutor
 	)
 
 	BeforeEach(func() {
@@ -38,7 +37,7 @@ var _ = Describe("ActionExecutor", func() {
 
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 
-		actionExecutor = service.NewService(databasesMock).ActionExecutor()
+		actionExecutor = newActionExecuter()
 	})
 
 	Context("Action report time", func() {

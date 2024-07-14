@@ -1,4 +1,4 @@
-package service
+package game
 
 import (
 	"puuclocks/internal/models"
@@ -7,34 +7,27 @@ import (
 	"github.com/google/uuid"
 )
 
-type Gameplay interface {
+type GameLoop interface {
 	ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error)
 }
 
-type gameplay struct {
+type gameLoop struct {
 	validator        Validator
-	foulChecker     FoulChecker
+	foulChecker      FoulChecker
 	actionExecutor   ActionExecutor
 	outcomeEvaluator OutcomeEvaluator
 }
 
-type gamePlayServices struct {
-	validator        Validator
-	foulChecker     FoulChecker
-	actionExecutor   ActionExecutor
-	outcomeEvaluator OutcomeEvaluator
-}
-
-func newGameplay(services gamePlayServices) Gameplay {
-	return &gameplay{
-		validator:        services.validator,
-		actionExecutor:   services.actionExecutor,
-		foulChecker:     services.foulChecker,
-		outcomeEvaluator: services.outcomeEvaluator,
+func newGameLoop() GameLoop {
+	return &gameLoop{
+		validator:        newValidator(),
+		actionExecutor:   newActionExecuter(),
+		foulChecker:      newFoulChecker(),
+		outcomeEvaluator: newOutcomeEvaluator(),
 	}
 }
 
-func (g gameplay) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error) {
+func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error) {
 	canBePerformed, err := g.validator.ValidateAction(game, action)
 	if err != nil {
 		return true, err
@@ -59,6 +52,6 @@ func (g gameplay) ProcessAction(game *models.Game, socketID uuid.UUID, action ac
 	return g.shouldCloseGame(game, socketID, action)
 }
 
-func (g gameplay) shouldCloseGame(game *models.Game, socketID uuid.UUID, action actions.Action) (bool, error) {
+func (g gameLoop) shouldCloseGame(game *models.Game, socketID uuid.UUID, action actions.Action) (bool, error) {
 	return false, nil
 }

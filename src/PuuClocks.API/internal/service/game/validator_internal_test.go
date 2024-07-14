@@ -1,4 +1,4 @@
-package service_test
+package game
 
 import (
 	. "github.com/onsi/ginkgo/v2"
@@ -8,7 +8,6 @@ import (
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
-	"puuclocks/internal/service"
 )
 
 var _ = Describe("Validator", Ordered, func() {
@@ -28,7 +27,7 @@ var _ = Describe("Validator", Ordered, func() {
 		startGame           *actions.MockAction
 		synchronizationRule *actions.MockAction
 
-		validator service.Validator
+		validator Validator
 	)
 
 	BeforeEach(func() {
@@ -55,7 +54,7 @@ var _ = Describe("Validator", Ordered, func() {
 		startGame.EXPECT().GetType().Return(actions.ActionTypeStartGame).AnyTimes()
 		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronizationRule).AnyTimes()
 
-		validator = service.NewService(databasesMock).Validator()
+		validator = newValidator()
 	})
 
 	It("should return true immediately if action equal to end of turn", func() {

@@ -1,10 +1,9 @@
-package service
+package game
 
 import (
 	"fmt"
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
-	"puuclocks/internal/repository"
 
 	"github.com/google/uuid"
 )
@@ -13,14 +12,10 @@ type FoulChecker interface {
 	CheckForFaul(game *models.Game, socketID uuid.UUID, action actions.Action) error
 }
 
-type foulChecker struct {
-	redis repository.Redis
-}
+type foulChecker struct{}
 
-func newFoulChecker(redis repository.Redis) FoulChecker {
-	return &foulChecker{
-		redis: redis,
-	}
+func newFoulChecker() FoulChecker {
+	return &foulChecker{}
 }
 
 func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action actions.Action) error {
@@ -53,7 +48,7 @@ func (c foulChecker) CheckForFaul(game *models.Game, socketID uuid.UUID, action 
 			return nil
 		}
 	case actions.ActionTypeReportTime:
-		if game.Players[game.Turn] == player && *action.GetData().ReportedTime == game.ExpectedTime{
+		if game.Players[game.Turn] == player && *action.GetData().ReportedTime == game.ExpectedTime {
 			return nil
 		}
 	}

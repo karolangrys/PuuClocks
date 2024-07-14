@@ -34,7 +34,7 @@ func main() {
 		panic(err)
 	}
 
-	service := service.NewService(databases)
+	service := service.NewService()
 	lobbyManager := sockets.NewLobbyManager()
 
 	rest := server.NewRestServer(server.RestServerParameters{
