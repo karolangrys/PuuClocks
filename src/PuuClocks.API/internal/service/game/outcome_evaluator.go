@@ -9,7 +9,7 @@ import (
 )
 
 type OutcomeEvaluator interface {
-	ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string))
+	ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte)
 }
 
 type outcomeEvaluator struct {
@@ -20,7 +20,7 @@ func newOutcomeEvaluator() OutcomeEvaluator {
 }
 
 
-func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) {
+func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte) {
 	if action.GetType() ==  actions.ActionTypeReportError{
 		player := game.LastActionCaller
 		if !game.AreRulesBroken {

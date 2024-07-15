@@ -8,7 +8,7 @@ import (
 )
 
 type GameLoop interface {
-	ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error)
+	ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte) (bool, error)
 }
 
 type gameLoop struct {
@@ -27,7 +27,7 @@ func newGameLoop() GameLoop {
 	}
 }
 
-func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan (string)) (bool, error) {
+func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast  chan []byte) (bool, error) {
 	canBePerformed, err := g.validator.ValidateAction(game, action)
 	if err != nil {
 		return true, err

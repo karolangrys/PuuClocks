@@ -45,7 +45,7 @@ func (s *restServer) Ping(c *gin.Context) {
 }
 
 func (s *restServer) CreateLobby(c *gin.Context) {
-	lobby := s.lobbyManager.CreateLobby(s.service.GameLoop())
+	lobby := s.lobbyManager.CreateLobby(s.service)
 	
 	c.JSON(http.StatusOK, gin.H{
 		"lobbyID": lobby.GetID(),

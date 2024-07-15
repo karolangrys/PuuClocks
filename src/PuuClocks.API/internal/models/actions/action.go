@@ -112,3 +112,4 @@ func ActionRelatedTo(action ActionType) *ActionRelated {
 		return nil
 	}
 }
+

@@ -9,6 +9,7 @@ import (
 
 type Client interface {
 	SendMessage([]byte)
+	GetID() uuid.UUID
 	Close()
 }
 
@@ -79,4 +80,8 @@ func (c *client) SendMessage(msg []byte) {
 
 func (c *client) Close() {
 	close(c.Receive)
+}
+
+func (c *client) GetID() uuid.UUID{
+	return c.ID
 }
