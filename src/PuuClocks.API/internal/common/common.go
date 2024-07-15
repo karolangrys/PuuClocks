@@ -16,3 +16,12 @@ func Chunk[T any](m []T, howManyChunks int) [][]T {
 
 	return res
 }
+
+ func Contains[T comparable](item T, arr []T) bool {
+    for _, i := range arr {
+        if i == item {
+            return true
+        }
+    }
+    return false
+}
