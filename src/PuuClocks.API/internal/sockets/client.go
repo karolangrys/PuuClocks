@@ -57,7 +57,7 @@ func (c *client) Read() {
 		}
 		c.Lobby.ForwardMessage(Message{
 			SocketID: c.ID,
-			Data: string(msg),
+			Data: msg,
 		})
 	}
 }

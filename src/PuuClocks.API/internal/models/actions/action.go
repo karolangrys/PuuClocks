@@ -4,9 +4,22 @@ package actions
 
 import (
 	"encoding/json"
+	"puuclocks/internal/common"
 
 	"github.com/google/uuid"
 )
+
+/*
+	Example Action
+	{
+		Type: "xyz",
+		Data: {
+			SocketID: <- Filled by server
+
+			ReportedTime: float
+		}
+	}
+*/
 
 type ActionType string
 
@@ -20,7 +33,7 @@ var (
 )
 
 type ActionData struct {
-	ReportedTime *float64 `json:"reportedTime"`
+	ReportedTime *float64   `json:"reportedTime"`
 	ReporterID   *uuid.UUID `json:"ReportedID"`
 }
 
@@ -30,20 +43,10 @@ type Action interface {
 }
 
 type action struct {
-	Type ActionType `json:"type"`
+	Type ActionType  `json:"type"`
 	Data *ActionData `json:"data"`
 }
 
-/*
-	{
-		Type: "xyz",
-		Data: {
-			SocketID: <- Filled by server
-
-			ReportedTime: float
-		}
-	}
-*/
 func (a action) GetType() ActionType {
 	return a.Type
 }
@@ -80,4 +83,32 @@ func ValidateUserProvidedAction(b []byte) *action {
 	}
 
 	return nil
+}
+
+type ActionRelated string
+
+var (
+	ActionRelatedLobby    ActionRelated = "lobby"
+	ActionRelatedGameplay ActionRelated = "gameplay"
+)
+
+func ActionRelatedTo(action ActionType) *ActionRelated {
+	gameplayRelated := []ActionType{
+		ActionTypeReportError,
+		ActionTypeReportTime,
+		ActionTypeSynchronization,
+	}
+
+	lobbyRelated := []ActionType{
+		ActionTypeStartGame,
+	}
+
+	switch {
+	case common.Contains(action, gameplayRelated):
+		return &ActionRelatedGameplay
+	case common.Contains(action, lobbyRelated):
+		return &ActionRelatedLobby
+	default:
+		return nil
+	}
 }

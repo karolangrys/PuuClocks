@@ -3,8 +3,7 @@ package sockets
 import (
 	"fmt"
 	"puuclocks/internal/models"
-
-	//	"puuclocks/internal/models/actions"
+	"puuclocks/internal/models/actions"
 	"puuclocks/internal/service/game"
 
 	"github.com/google/uuid"
@@ -41,7 +40,7 @@ type Settings struct{}
 
 type Message struct {
 	SocketID uuid.UUID
-	Data     string
+	Data     []byte
 }
 
 func NewLobby(gameplay game.GameLoop) Lobby {
@@ -74,16 +73,35 @@ func (l *lobby) run() {
 			client.Close()
 		case msg := <-l.Forward:
 			fmt.Println("Action From: ", msg.SocketID, " Data: ", msg.Data)
-			l.Broadcast <- msg.Data
-			/*action := actions.ValidateIfUserProvidedActionInstance(msg.Data)
+			action := actions.ValidateUserProvidedAction(msg.Data)
 			if action == nil {
-				fmt.Println("There was a error during valdiation")
+				fmt.Println("User action couldn't be validated")
 				break
 			}
-			_, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
-			if err != nil {
 
-			}*/
+			if action.Data == nil {
+				action.Data = &actions.ActionData{}
+			}
+			action.Data.ReporterID = &msg.SocketID
+
+			actionRelated := actions.ActionRelatedTo(action.Type)
+			if actionRelated == nil {
+				fmt.Println("Action is not presigned to related type")
+				break
+			}
+
+			switch *actionRelated{
+			case actions.ActionRelatedGameplay:
+				_, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
+				if err != nil {
+					fmt.Println("Couldn't process action %v: %s", *action)
+					break;
+				}
+				break;
+			case actions.ActionRelatedLobby:
+				break;
+			}
+			
 		case msg := <-l.Broadcast:
 			for c, _ := range l.Clients {
 				c.SendMessage([]byte(msg))
