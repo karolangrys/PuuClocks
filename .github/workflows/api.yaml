@@ -19,7 +19,7 @@ jobs:
           go-version: 1.21
 
       - name: Install Ginkgo
-        run: go install github.com/onsi/ginkgo/v2/ginkgo
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
       - name: Start app
         run: docker-compose -f ./src/PuuClocks.API/docker-compose-it-gh.yaml up -d
