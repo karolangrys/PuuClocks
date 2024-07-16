@@ -8,6 +8,9 @@ on:
 jobs:
   api-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/PuuClocks.API
 
     steps:
       - uses: actions/checkout@v3
@@ -22,7 +25,7 @@ jobs:
         run: go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
       - name: Start app
-        run: docker-compose -f src/PuuClocks.API/docker-compose-github.yaml up -d
+        run: docker-compose -f docker-compose-github.yaml up -d
 
       - name: Wait for app to be up
         run: timeout 180 bash -c .github/scripts/app_check.sh
