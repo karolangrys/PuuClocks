@@ -1,0 +1,40 @@
+name: Puu Clocks tests
+
+on: 
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/PuuClocks.API
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: Install Ginkgo
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@latest
+
+      - name: Start app
+        run: docker-compose -f docker-compose-github.yaml up -d
+
+      - name: Wait for app to be up
+        run: timeout 180 bash -c ../../.github/scripts/app_check.sh
+
+      - name: Run test-report
+        run: make test-report
+
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: |
+             ./src/PuuClocks.API/report.xml

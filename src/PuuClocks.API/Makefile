@@ -18,6 +18,9 @@ mocks:
 test:
 	ginkgo ./...
 
+test-report:
+	ginkgo --junit-report=report.xml  ./... 
+
 swagger:
 	swagger generate server --target=./internal/gen
 

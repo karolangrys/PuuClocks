@@ -10,7 +10,7 @@ services:
         condition: service_healthy
     env_file: .env.docker
     image:
-      cosmtrek/air:latest
+      golang:1.21-alpine
     ports:
       - "8080:8080"
     volumes:
