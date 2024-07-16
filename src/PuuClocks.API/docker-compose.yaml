@@ -24,6 +24,10 @@ services:
     hostname: redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      timeout: 5s
+      retries: 10
     ports:
       - "6379:6379"
 
