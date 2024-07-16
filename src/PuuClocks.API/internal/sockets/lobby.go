@@ -1,16 +1,23 @@
 package sockets
 
 import (
+	"fmt"
+	"puuclocks/internal/models"
+	"puuclocks/internal/models/actions"
+	"puuclocks/internal/service"
+	"puuclocks/internal/service/game"
+
 	"github.com/google/uuid"
 )
 
 type Lobby interface {
 	GetID() uuid.UUID
+	GetOwnerID() uuid.UUID
 
 	JoinLobby(Client)
 	LeaveLobby(Client)
 
-	ForwardMessage([]byte)
+	ForwardMessage(Message)
 }
 
 type lobby struct {
@@ -18,23 +25,41 @@ type lobby struct {
 
 	Owner Client
 
-	Join    chan Client
-	Leave   chan Client
-	Forward chan []byte
+	Join      chan Client
+	Leave     chan Client
+	Forward   chan Message
+	Broadcast chan []byte
 
 	Clients map[Client]bool
+
+	Game         *models.Game
+	Gameplay     game.GameLoop
+	LobbyHandler service.LobbyHandler
+
+	Settings Settings
 }
 
-func NewLobby() Lobby {
+type Settings struct{}
+
+type Message struct {
+	SocketID uuid.UUID
+	Data     []byte
+}
+
+func NewLobby(services service.Service) Lobby {
 	id := uuid.New()
 
 	l := lobby{
 		ID: id,
 
-		Forward: make(chan []byte),
-		Join:    make(chan Client),
-		Leave:   make(chan Client),
-		Clients: make(map[Client]bool),
+		Forward:   make(chan Message, 10),
+		Join:      make(chan Client),
+		Leave:     make(chan Client),
+		Clients:   make(map[Client]bool),
+		Broadcast: make(chan []byte, 10),
+
+		Gameplay:     services.GameLoop(),
+		LobbyHandler: services.LobbyHandler(),
 	}
 
 	go l.run()
@@ -51,22 +76,67 @@ func (l *lobby) run() {
 			delete(l.Clients, client)
 			client.Close()
 		case msg := <-l.Forward:
+			fmt.Println("Action From: ", msg.SocketID, " Data: ", msg.Data)
+			action := actions.ValidateUserProvidedAction(msg.Data)
+			if action == nil {
+				fmt.Println("User action couldn't be validated")
+				break
+			}
+
+			if action.Data == nil {
+				action.Data = &actions.ActionData{}
+			}
+			action.Data.ReporterID = &msg.SocketID
+
+			actionRelated := actions.ActionRelatedTo(action.Type)
+			if actionRelated == nil {
+				fmt.Println("Action is not presigned to related type")
+				break
+			}
+
+			switch *actionRelated {
+			case actions.ActionRelatedGameplay:
+				_, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
+				if err != nil {
+					fmt.Printf("Couldn't process action %v: %v", *action, err)
+					break
+				}
+			case actions.ActionRelatedLobby:
+				switch action.Type {
+				case actions.ActionTypeStartGame:
+					game, err := l.LobbyHandler.StartNewGame(l.Broadcast, l.GetOwnerID(), l.Game, action)
+					if err != nil {
+						fmt.Printf("Couldn't starting game %v: %v", *action, err)
+						break;
+					}
+
+					if game == nil {
+						break;
+					}
+
+					l.Game = game;
+					l.Broadcast <- actions.ServerSocketEventMessageStartGame()
+				}
+			}
+
+		case msg := <-l.Broadcast:
 			for c := range l.Clients {
-				c.ReceiveMessage(msg)
+				c.SendMessage([]byte(msg))
 			}
 		}
 	}
 }
 
-func (l lobby) GetID() uuid.UUID {
+func (l *lobby) GetID() uuid.UUID {
 	return l.ID
 }
 
-func (l lobby) ForwardMessage(msg []byte) {
+func (l *lobby) ForwardMessage(msg Message) {
 	l.Forward <- msg
 }
 
 func (l *lobby) JoinLobby(c Client) {
+	fmt.Println("NEW USER JOINED")
 	if l.Owner == nil {
 		l.Owner = c
 	}
@@ -74,6 +144,10 @@ func (l *lobby) JoinLobby(c Client) {
 	l.Join <- c
 }
 
-func (l lobby) LeaveLobby(c Client) {
+func (l *lobby) LeaveLobby(c Client) {
 	l.Leave <- c
+}
+
+func (l *lobby) GetOwnerID() uuid.UUID {
+	return l.Owner.GetID()
 }

@@ -13,6 +13,8 @@ type MySQL interface {
 	Query(query string, args ...string) (*sql.Rows, error)
 	QueryRow(query string, args ...string) *sql.Row
 	Exec(query string, args ...string) (sql.Result, error)
+
+	Health() error
 }
 
 type mySQL struct {
@@ -62,3 +64,8 @@ func (m mySQL) QueryRow(query string, args ...string) *sql.Row {
 func (m mySQL) Exec(query string, args ...string) (sql.Result, error) {
 	return m.DB.Exec(query, args)
 }
+
+func (m mySQL) Health() error {
+	return m.DB.Ping()
+}
+	

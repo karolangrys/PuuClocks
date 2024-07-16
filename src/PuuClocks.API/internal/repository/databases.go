@@ -1,3 +1,5 @@
+//go:generate mockgen -source=databases.go -destination=databases_mock.go -package repository
+
 package repository
 
 import (
@@ -9,6 +11,8 @@ import (
 type Databases interface {
 	RedisDB() Redis
 	DB() infrastructure.MySQL
+
+	Health() error
 }
 
 type databases struct {
@@ -47,4 +51,16 @@ func (d databases) RedisDB() Redis {
 
 func (d databases) DB() infrastructure.MySQL {
 	return d.db
+}
+
+func (d databases) Health() error {
+	ctx := context.Background()
+	if err := d.redisDB.Health(ctx); err != nil {
+		return err
+	}
+	if err := d.db.Health(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -5,15 +5,20 @@ import (
 	"puuclocks/internal/infrastructure"
 	"puuclocks/internal/log"
 	"puuclocks/internal/repository"
+	"puuclocks/internal/server"
+	"puuclocks/internal/service"
 	"puuclocks/internal/sockets"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
+
+	gen_openapi "puuclocks/gen"
 )
 
 func main() {
+	log.InitLogger()
+
 	dbCfg := repository.DatabasesConfig{
 		RedisConfig: repository.RedisConfig{
 			Addr: "redis:6379",
@@ -24,64 +29,40 @@ func main() {
 		},
 	}
 
-	log.InitLogger()
-
-	_, err := repository.NewDatabases(&dbCfg)
+	databases, err := repository.NewDatabases(&dbCfg)
 	if err != nil {
 		panic(err)
 	}
 
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
+	service := service.NewService()
 	lobbyManager := sockets.NewLobbyManager()
-	r.POST("/create-lobby", func(c *gin.Context) {
-		lobby := lobbyManager.CreateLobby()
-		c.JSON(http.StatusOK, gin.H{
-			"lobbyID": lobby.GetID(),
-		})
+
+	rest := server.NewRestServer(server.RestServerParameters{
+		Service:      service,
+		Databases:    databases,
+		LobbyManager: lobbyManager,
+	})
+	socket := server.NewSocketServer(server.SocketServerParameters{
+		Service:      service,
+		Databases:    databases,
+		LobbyManager: lobbyManager,
 	})
 
-	r.GET("/join-lobby/:id", func(c *gin.Context) {
-		var conn *websocket.Conn
-		var parsedID uuid.UUID
-		conn, err = sockets.Upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			log.Log.Errorln(err)
-			return
-		}
-		defer conn.Close()
-		id := c.Param("id")
+	r := gin.Default()
 
-		parsedID, err = uuid.Parse(id)
-		if err != nil {
-			if err = conn.WriteJSON(map[string]string{
-				"message": "User not passed lobby UUID",
-			}); err != nil {
-				log.Log.Errorln(err)
-			}
-		} else {
-			l := lobbyManager.FindLobby(parsedID)
-			if l == nil {
-				if err = conn.WriteJSON(map[string]string{
-					"message": "Lobby not found",
-				}); err != nil {
-					log.Log.Errorln(err)
-				}
-			} else {
-				sockets.NewClient(conn, l)
-				if err = conn.WriteJSON(map[string]string{
-					"message": "User connected",
-				}); err != nil {
-					log.Log.Errorln(err)
-				}
-			}
-		}
-	})
+	gen_openapi.RegisterHandlers(r, rest)
+	socket.RegisterSocketHandlers(r)
+
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	httpServer := &http.Server{
 		Addr:              ":8080",
@@ -89,8 +70,5 @@ func main() {
 		ReadHeaderTimeout: time.Second,
 	}
 
-	err = httpServer.ListenAndServe()
-	if err != nil {
-		panic(err)
-	}
+	log.Log.DPanicln(httpServer.ListenAndServe())
 }

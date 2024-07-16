@@ -1,0 +1,69 @@
+openapi: '3.0.0'
+info:
+  title: PuuClock API
+  description: Description to add. Probably later will be in Markdown.
+  version: 1.0.0
+paths:
+  /ping:
+    get:
+      operationId: ping
+      summary: Service health check
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ping'
+        500:
+          description: Server not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ping'
+          
+  /create-lobby:
+    post:
+      operationId: createLobby
+      summary: Creates lobby and returns its id
+      responses:
+        200:
+          description: Succesfully created lobby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lobbyCreationSuccess'
+        403:
+          description: Server refuses to create lobby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lobbyCreationRefused'
+
+
+components:
+  schemas:
+    ping:
+      type: object
+      required: 
+        - status
+      properties:
+        status:
+          type: string
+
+    lobbyCreationSuccess:
+      type: object
+      required: 
+        - lobbyID
+      properties:
+        lobbyID:
+          type: string
+          format: uuid
+
+    lobbyCreationRefused:
+      type: object
+      required: 
+        - message
+      properties:
+        message:
+          type: string
