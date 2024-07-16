@@ -37,4 +37,4 @@ jobs:
         uses: test-summary/action@v1
         with:
           paths: |
-            ./report.xml
+             ./src/PuuClocks.API/report.xml
