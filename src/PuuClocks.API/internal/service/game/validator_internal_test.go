@@ -89,59 +89,86 @@ var _ = Describe("Validator", Ordered, func() {
 	})
 
 	Context("Game state equal to synchronization or action", func() {
-		var (
-			synchronizationGame models.Game
-			actionGame          models.Game
-		)
+		Describe("synchronization game", func() {
+			var (
+				synchronizationGame models.Game
+			)
 
-		BeforeEach(func() {
-			synchronizationGame = models.Game{State: models.GameStateSynchronization}
-			actionGame = models.Game{State: models.GameStateAction}
-		})
+			BeforeEach(func() {
+				synchronizationGame = models.Game{State: models.GameStateSynchronization}
+			})
 
-		It("should return false", func() {
-			games := []models.Game{
-				synchronizationGame,
-				actionGame,
-			}
+			It("should return false", func() {
+				testedActions := []actions.Action{
+					startGame,
+					reportTime,
+				}
 
-			testedActions := []actions.Action{
-				startGame,
-				reportTime,
-			}
-
-			for _, g := range games {
 				for _, a := range testedActions {
 					// when
-					allowed, err := validator.ValidateAction(&g, a)
+					allowed, err := validator.ValidateAction(&synchronizationGame, a)
 					// then
 					Expect(allowed).To(Equal(false))
 					Expect(err).To(BeNil())
 				}
-			}
-		})
+			})
 
-		It("should return true", func() {
-			// given
-			games := []models.Game{
-				synchronizationGame,
-				actionGame,
-			}
+			It("should return true", func() {
+				// given
+				actions := []actions.Action{
+					synchronizationRule,
+					reportError,
+				}
 
-			actions := []actions.Action{
-				synchronizationRule,
-				reportError,
-			}
-
-			for _, g := range games {
 				for _, a := range actions {
 					// when
-					allowed, err := validator.ValidateAction(&g, a)
+					allowed, err := validator.ValidateAction(&synchronizationGame, a)
 					// then
 					Expect(allowed).To(Equal(true))
 					Expect(err).To(BeNil())
 				}
-			}
+			})
+		})
+
+		Describe("action game", func() {
+			var (
+				actionGame models.Game
+			)
+
+			BeforeEach(func() {
+				actionGame = models.Game{State: models.GameStateAction}
+			})
+
+			It("should return false", func() {
+				testedActions := []actions.Action{
+					startGame,
+					reportTime,
+				}
+
+				for _, a := range testedActions {
+					// when
+					allowed, err := validator.ValidateAction(&actionGame, a)
+					// then
+					Expect(allowed).To(Equal(false))
+					Expect(err).To(BeNil())
+				}
+			})
+
+			It("should return true", func() {
+				// given
+				actions := []actions.Action{
+					synchronizationRule,
+					reportError,
+				}
+
+				for _, a := range actions {
+					// when
+					allowed, err := validator.ValidateAction(&actionGame, a)
+					// then
+					Expect(allowed).To(Equal(true))
+					Expect(err).To(BeNil())
+				}
+			})
 		})
 	})
 })

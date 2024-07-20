@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"puuclocks/internal/consts"
 	"puuclocks/internal/log"
 	"puuclocks/internal/models"
 	"puuclocks/internal/models/actions"
@@ -70,7 +71,6 @@ func (a actionExecutor) Execute(game *models.Game, socketID uuid.UUID, action ac
 		game.State = models.GameStateAction
 
 	case actions.ActionTypeSynchronization:
-
 	}
 
 	return nil
@@ -106,9 +106,9 @@ func (a actionExecutor) findPlayerBySocketID(game *models.Game, socketID uuid.UU
 	return nil
 }
 
-func (a actionExecutor) getRuleToApply(game *models.Game, card models.Card) (func(*models.Game), bool, error) {
+func (a actionExecutor) getRuleToApply(game *models.Game, card models.Card) (ruleToApply func(*models.Game), overload bool, err error) {
 	var f func(*models.Game)
-	occured := 0
+	occurred := 0
 	for _, rule := range game.Rules {
 		doesOccure, err := rule.Occure(game, &card)
 		if err != nil {
@@ -116,17 +116,17 @@ func (a actionExecutor) getRuleToApply(game *models.Game, card models.Card) (fun
 		}
 
 		if doesOccure {
-			occured++
+			occurred++
 		}
 
-		if occured == 1 {
+		if occurred == 1 {
 			f, err = rule.RetrieveThen()
 			if err != nil {
 				return nil, false, err
 			}
 		}
 
-		if occured > 1 {
+		if occurred > 1 {
 			return nil, true, nil
 		}
 	}
@@ -150,11 +150,11 @@ func (a actionExecutor) changeTime(game *models.Game, howMuch float64) {
 	var exp float64
 
 	exp = game.ExpectedTime + howMuch
-	if exp > 12 {
-		exp -= 12
+	if exp > consts.MaxHour {
+		exp -= consts.MaxHour
 	}
 	if exp < 0 {
-		exp += 12
+		exp += consts.MaxHour
 	}
 
 	game.ExpectedTime = exp

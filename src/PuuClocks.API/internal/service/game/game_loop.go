@@ -27,7 +27,7 @@ func newGameLoop() GameLoop {
 	}
 }
 
-func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast  chan []byte) (bool, error) {
+func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte) (bool, error) {
 	canBePerformed, err := g.validator.ValidateAction(game, action)
 	if err != nil {
 		return true, err
@@ -52,6 +52,6 @@ func (g gameLoop) ProcessAction(game *models.Game, socketID uuid.UUID, action ac
 	return g.shouldCloseGame(game, socketID, action)
 }
 
-func (g gameLoop) shouldCloseGame(game *models.Game, socketID uuid.UUID, action actions.Action) (bool, error) {
+func (g gameLoop) shouldCloseGame(_ *models.Game, _ uuid.UUID, _ actions.Action) (bool, error) {
 	return false, nil
 }

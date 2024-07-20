@@ -48,15 +48,16 @@ type Message struct {
 
 func NewLobby(services service.Service) Lobby {
 	id := uuid.New()
+	maxMessageAmount := 10
 
 	l := lobby{
 		ID: id,
 
-		Forward:   make(chan Message, 10),
+		Forward:   make(chan Message, maxMessageAmount),
 		Join:      make(chan Client),
 		Leave:     make(chan Client),
 		Clients:   make(map[Client]bool),
-		Broadcast: make(chan []byte, 10),
+		Broadcast: make(chan []byte, maxMessageAmount),
 
 		Gameplay:     services.GameLoop(),
 		LobbyHandler: services.LobbyHandler(),
@@ -104,24 +105,30 @@ func (l *lobby) run() {
 			case actions.ActionRelatedLobby:
 				switch action.Type {
 				case actions.ActionTypeStartGame:
-					game, err := l.LobbyHandler.StartNewGame(l.Broadcast, l.GetOwnerID(), l.Game, action)
+					gameParams := service.StartGameParams{
+						Broadcast: l.Broadcast,
+						OwnerID:   l.GetOwnerID(),
+						Game:      l.Game,
+						Action:    action,
+					}
+					g, err := l.LobbyHandler.StartNewGame(gameParams)
 					if err != nil {
 						fmt.Printf("Couldn't starting game %v: %v", *action, err)
-						break;
+						break
 					}
 
-					if game == nil {
-						break;
+					if g == nil {
+						break
 					}
 
-					l.Game = game;
+					l.Game = g
 					l.Broadcast <- actions.ServerSocketEventMessageStartGame()
 				}
 			}
 
 		case msg := <-l.Broadcast:
 			for c := range l.Clients {
-				c.SendMessage([]byte(msg))
+				c.SendMessage(msg)
 			}
 		}
 	}

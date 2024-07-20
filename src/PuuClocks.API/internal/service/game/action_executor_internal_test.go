@@ -57,7 +57,9 @@ var _ = Describe("ActionExecutor", func() {
 			res := actionExecutor.Execute(&game, playerUUID, reportTime)
 
 			// then
-			Expect(res.Error()).To(Equal(fmt.Sprintf("couldn't find player who reported time with %d connection ID in %d game", playerUUID, game.ID)))
+			Expect(res.Error()).To(Equal(
+				fmt.Sprintf("couldn't find player who reported time with %d connection ID in %d game", playerUUID, game.ID),
+			))
 		})
 
 		It("should throw error if player have no card at hand", func() {
@@ -113,12 +115,12 @@ var _ = Describe("ActionExecutor", func() {
 			}
 
 			game := models.Game{
-				Players:      players,
-				Turn:         0,
+				Players:       players,
+				Turn:          0,
 				TurnDirection: models.GameDirectionClockWise,
 				TimeDirection: models.GameDirectionClockWise,
-				Rules: models.DefaultRules(),
-				ExpectedTime: 1.00,
+				Rules:         models.DefaultRules(),
+				ExpectedTime:  1.00,
 			}
 
 			playerCalledTime := 12.0
@@ -168,12 +170,12 @@ var _ = Describe("ActionExecutor", func() {
 			}
 
 			game := models.Game{
-				Players:      players,
-				Turn:         0,
+				Players:       players,
+				Turn:          0,
 				TurnDirection: models.GameDirectionClockWise,
 				TimeDirection: models.GameDirectionClockWise,
-				Rules: models.DefaultRules(),
-				ExpectedTime: 1.00,
+				Rules:         models.DefaultRules(),
+				ExpectedTime:  1.00,
 			}
 
 			playerCalledTime := 10.0
@@ -221,17 +223,17 @@ var _ = Describe("ActionExecutor", func() {
 					},
 				},
 			}
-			
+
 			lastCalledTime := float64(12.00)
 
 			game := models.Game{
-				Players:      players,
-				Turn:         0,
-				TurnDirection: models.GameDirectionClockWise,
-				TimeDirection: models.GameDirectionClockWise,
-				Rules: models.DefaultRules(),
+				Players:        players,
+				Turn:           0,
+				TurnDirection:  models.GameDirectionClockWise,
+				TimeDirection:  models.GameDirectionClockWise,
+				Rules:          models.DefaultRules(),
 				LastCalledTime: &lastCalledTime,
-				ExpectedTime: 12.00,
+				ExpectedTime:   12.00,
 			}
 
 			playerCalledTime := 12.0

@@ -1,9 +1,9 @@
 package actions
 
-/* 
-	Later move this to other place 
+/*
+	Later move this to other place
 	It shouldnt be player action
-	Create seperate channel for it in lobby
+	Create separate channel for it in lobby
 	And make listener for it
 */
 

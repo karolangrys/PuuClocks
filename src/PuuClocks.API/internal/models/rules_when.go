@@ -9,6 +9,6 @@ func SameLastCalledTimeWhenRule(g *Game, c *Card) bool {
 	return g.LastCalledTime != nil && *g.LastCalledTime == c.Hour
 }
 
-func WehicleCardWhenRule(g *Game, c *Card) bool {
+func WehicleCardWhenRule(_ *Game, c *Card) bool {
 	return c.ClockID == 1
 }
