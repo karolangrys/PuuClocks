@@ -111,17 +111,17 @@ func (l *lobby) run() {
 						Game:      l.Game,
 						Action:    action,
 					}
-					g, err := l.LobbyHandler.StartNewGame(gameParams)
+					game, err := l.LobbyHandler.StartNewGame(gameParams)
 					if err != nil {
 						fmt.Printf("Couldn't starting game %v: %v", *action, err)
 						break
 					}
 
-					if g == nil {
+					if game == nil {
 						break
 					}
 
-					l.Game = g
+					l.Game = game
 					l.Broadcast <- actions.ServerSocketEventMessageStartGame()
 				}
 			}
