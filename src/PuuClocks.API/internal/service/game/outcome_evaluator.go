@@ -19,9 +19,8 @@ func newOutcomeEvaluator() OutcomeEvaluator {
 	return &outcomeEvaluator{}
 }
 
-
-func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte) {
-	if action.GetType() ==  actions.ActionTypeReportError{
+func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, _ chan []byte) {
+	if action.GetType() == actions.ActionTypeReportError {
 		player := game.LastActionCaller
 		if !game.AreRulesBroken {
 			for _, p := range game.Players {
@@ -30,7 +29,7 @@ func (o outcomeEvaluator) ShouldPunishOrAward(game *models.Game, socketID uuid.U
 				}
 			}
 		}
-		o.punishPlayers(game, []*models.Player{player})		
+		o.punishPlayers(game, []*models.Player{player})
 	}
 }
 

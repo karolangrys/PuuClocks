@@ -1,5 +1,7 @@
 package models
 
+import "puuclocks/internal/consts"
+
 var ThenRules = map[int]func(*Game){
 	1: SynchronizationThenRule,
 	2: ReverseTimeDirectionThenRule,
@@ -19,11 +21,11 @@ func changeTime(game *Game, howMuch float64) {
 	var exp float64
 
 	exp = game.ExpectedTime + howMuch
-	if exp > 12 {
-		exp -= 12
+	if exp > consts.MaxHour {
+		exp -= consts.MaxHour
 	}
 	if exp < 0 {
-		exp += 12
+		exp += consts.MaxHour
 	}
 
 	game.ExpectedTime = exp

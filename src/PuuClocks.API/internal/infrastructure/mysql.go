@@ -68,4 +68,3 @@ func (m mySQL) Exec(query string, args ...string) (sql.Result, error) {
 func (m mySQL) Health() error {
 	return m.DB.Ping()
 }
-	

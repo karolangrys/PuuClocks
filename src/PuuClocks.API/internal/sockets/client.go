@@ -14,7 +14,7 @@ type Client interface {
 }
 
 type client struct {
-	ID uuid.UUID
+	ID     uuid.UUID
 	Socket *websocket.Conn
 
 	Receive chan []byte
@@ -29,7 +29,7 @@ var Upgrader = websocket.Upgrader{
 
 func NewClient(conn *websocket.Conn, l Lobby) Client {
 	c := &client{
-		ID: uuid.New(),
+		ID:      uuid.New(),
 		Socket:  conn,
 		Receive: make(chan []byte, Upgrader.ReadBufferSize),
 		Lobby:   l,
@@ -58,7 +58,7 @@ func (c *client) Read() {
 		}
 		c.Lobby.ForwardMessage(Message{
 			SocketID: c.ID,
-			Data: msg,
+			Data:     msg,
 		})
 	}
 }
@@ -82,6 +82,6 @@ func (c *client) Close() {
 	close(c.Receive)
 }
 
-func (c *client) GetID() uuid.UUID{
+func (c *client) GetID() uuid.UUID {
 	return c.ID
 }

@@ -88,7 +88,7 @@ var _ = Describe("Action", Ordered, func() {
 				Expect(action.Data).To(BeNil())
 			})
 		})
-		
+
 		Describe("Type ReportTime", func() {
 			It("should return nil due to missing data", func() {
 				// given
@@ -109,7 +109,7 @@ var _ = Describe("Action", Ordered, func() {
 					[]byte(fmt.Sprintf(`{"type":%q,"data":{"reportedTime":0}}`, actions.ActionTypeReportTime)),
 				}
 
-				for _, t := range tests{
+				for _, t := range tests {
 					// when
 					action := actions.ValidateUserProvidedAction(t)
 

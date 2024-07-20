@@ -34,16 +34,16 @@ func main() {
 		panic(err)
 	}
 
-	service := service.NewService()
+	s := service.NewService()
 	lobbyManager := sockets.NewLobbyManager()
 
 	rest := server.NewRestServer(server.RestServerParameters{
-		Service:      service,
+		Service:      s,
 		Databases:    databases,
 		LobbyManager: lobbyManager,
 	})
 	socket := server.NewSocketServer(server.SocketServerParameters{
-		Service:      service,
+		Service:      s,
 		Databases:    databases,
 		LobbyManager: lobbyManager,
 	})

@@ -10,15 +10,15 @@ type Service interface {
 }
 
 type service struct {
-	gameLoop game.GameLoop
+	gameLoop     game.GameLoop
 	lobbyHandler LobbyHandler
 }
 
 func NewService() Service {
-	game := game.NewGame()
-	
+	g := game.NewGame()
+
 	return &service{
-		gameLoop: game.GameLoop(),
+		gameLoop:     g.GameLoop(),
 		lobbyHandler: newLobbyHandler(),
 	}
 }
