@@ -32,6 +32,8 @@ openapi:
 validate-openapi:
 	go run github.com/getkin/kin-openapi/cmd/validate@latest -- ./api/openapi.yml 
 
+dependency-visualize:
+	goda graph ./... | dot -Tsvg -o graph.svg
 
 
 
