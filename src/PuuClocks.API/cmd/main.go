@@ -49,20 +49,20 @@ func main() {
 	})
 
 	r := gin.Default()
+	
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers"},
+		AllowCredentials: true,
+		AllowAllOrigins: true,
+		AllowWebSockets: true,
+	}))
+
+	r.Use(CORSMiddleware())
 
 	gen_openapi.RegisterHandlers(r, rest)
 	socket.RegisterSocketHandlers(r)
-
-	r.Use(cors.New(cors.Config{
-		AllowMethods:     []string{"GET", "POST"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "http://localhost"
-		},
-		MaxAge: 12 * time.Hour,
-	}))
 
 	httpServer := &http.Server{
 		Addr:              ":8080",
@@ -71,4 +71,20 @@ func main() {
 	}
 
 	log.Log.DPanicln(httpServer.ListenAndServe())
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+
+        c.Next()
+    }
 }
