@@ -170,9 +170,9 @@ func (l *lobby) GetOwnerID() uuid.UUID {
 func (l *lobby) GetPlayersNicknamesWithout(nickname string) []string {
 	var opponents []string
 
-	for c := range l.Clients{
+	for c := range l.Clients {
 		n := c.GetNickname()
-		if n != nickname{
+		if n != nickname {
 			opponents = append(opponents, n)
 		}
 	}

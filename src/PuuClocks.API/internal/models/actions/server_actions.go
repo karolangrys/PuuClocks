@@ -14,8 +14,8 @@ var (
 )
 
 type ServerSocketEventData struct {
-	ConnectedPlayerNickname    *string   `json:",omitempty"`
-	DisconnectedPlayerNickname *string   `json:",omitempty"`
+	ConnectedPlayerNickname    *string  `json:",omitempty"`
+	DisconnectedPlayerNickname *string  `json:",omitempty"`
 	CurrentPlayers             []string `json:",omitempty"`
 }
 
