@@ -10,12 +10,14 @@ import (
 type Client interface {
 	SendMessage([]byte)
 	GetID() uuid.UUID
+	GetNickname() string
 	Close()
 }
 
 type client struct {
-	ID     uuid.UUID
-	Socket *websocket.Conn
+	ID       uuid.UUID
+	Nickname string
+	Socket   *websocket.Conn
 
 	Receive chan []byte
 
@@ -84,4 +86,8 @@ func (c *client) Close() {
 
 func (c *client) GetID() uuid.UUID {
 	return c.ID
+}
+
+func (c *client) GetNickname() string {
+	return c.Nickname
 }
