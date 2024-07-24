@@ -31,11 +31,11 @@ var Upgrader = websocket.Upgrader{
 
 func NewClient(conn *websocket.Conn, l Lobby, nickname string) Client {
 	c := &client{
-		ID:      uuid.New(),
+		ID:       uuid.New(),
 		Nickname: nickname,
-		Socket:  conn,
-		Receive: make(chan []byte, Upgrader.ReadBufferSize),
-		Lobby:   l,
+		Socket:   conn,
+		Receive:  make(chan []byte, Upgrader.ReadBufferSize),
+		Lobby:    l,
 	}
 
 	l.JoinLobby(c)
