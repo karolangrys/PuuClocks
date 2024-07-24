@@ -70,7 +70,7 @@ func (s socketServer) JoinLobby(c *gin.Context) {
 				log.Log.Errorln(err)
 			}
 		} else {
-			sockets.NewClient(conn, l)
+			sockets.NewClient(conn, l, nickname)
 			if err = conn.WriteJSON(map[string]string{
 				"message": "User connected",
 			}); err != nil {

@@ -29,9 +29,10 @@ var Upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func NewClient(conn *websocket.Conn, l Lobby) Client {
+func NewClient(conn *websocket.Conn, l Lobby, nickname string) Client {
 	c := &client{
 		ID:      uuid.New(),
+		Nickname: nickname,
 		Socket:  conn,
 		Receive: make(chan []byte, Upgrader.ReadBufferSize),
 		Lobby:   l,

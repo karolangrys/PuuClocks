@@ -143,12 +143,13 @@ func (l *lobby) ForwardMessage(msg Message) {
 }
 
 func (l *lobby) JoinLobby(c Client) {
-	fmt.Println("NEW USER JOINED")
+	l.Join <- c
+	
 	if l.Owner == nil {
 		l.Owner = c
+		l.Broadcast <- actions.ServerSocketEventMessageLobbyOwner(c.GetNickname())
 	}
 
-	l.Join <- c
 }
 
 func (l *lobby) LeaveLobby(c Client) {

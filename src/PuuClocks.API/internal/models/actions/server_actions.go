@@ -6,9 +6,11 @@ type ServerSocketEvent string
 
 var (
 	ServerSocketEventGameStarting ServerSocketEvent = "game-starting"
+	ServerSocketEventLobbyOwner   ServerSocketEvent = "lobby-owner"
 )
 
 type ServerSocketEventData struct {
+	OwnerNickname *string
 }
 
 type ServerSocketEventMessage struct {
@@ -19,6 +21,22 @@ type ServerSocketEventMessage struct {
 func ServerSocketEventMessageStartGame() []byte {
 	message := ServerSocketEventMessage{
 		Event: ServerSocketEventGameStarting,
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessageLobbyOwner(nickname string) []byte {
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventLobbyOwner,
+		Data: ServerSocketEventData{
+			OwnerNickname: &nickname,
+		},
 	}
 
 	r, err := json.Marshal(message)
