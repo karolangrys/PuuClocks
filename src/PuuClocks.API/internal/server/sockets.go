@@ -44,6 +44,15 @@ func (s socketServer) JoinLobby(c *gin.Context) {
 	}
 	defer conn.Close()
 	id := c.Param("id")
+	nickname := c.Query("nickname")
+	if nickname == "" {
+		if err = conn.WriteJSON(map[string]string{
+			"message": "User not passed nickname",
+		}); err != nil {
+			log.Log.Errorln(err)
+		}
+		return
+	}
 
 	parsedID, err = uuid.Parse(id)
 	if err != nil {
