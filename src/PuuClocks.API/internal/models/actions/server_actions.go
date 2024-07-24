@@ -5,12 +5,16 @@ import "encoding/json"
 type ServerSocketEvent string
 
 var (
-	ServerSocketEventGameStarting ServerSocketEvent = "game-starting"
-	ServerSocketEventLobbyOwner   ServerSocketEvent = "lobby-owner"
+	ServerSocketEventGameStarting       ServerSocketEvent = "game-starting"
+	ServerSocketEventLobbyOwner         ServerSocketEvent = "lobby-owner"
+	ServerSocketEventNewPlayer          ServerSocketEvent = "new-player"
+	ServerSocketEventPlayerConnected    ServerSocketEvent = "player-connected"
+	ServerSocketEventPlayerDisconnected ServerSocketEvent = "player-disconnected"
 )
 
 type ServerSocketEventData struct {
-	OwnerNickname *string
+	ConnectedPlayerNickname    *string `json:",omitempty"`
+	DisconnectedPlayerNickname *string `json:",omitempty"`
 }
 
 type ServerSocketEventMessage struct {
@@ -35,7 +39,39 @@ func ServerSocketEventMessageLobbyOwner(nickname string) []byte {
 	message := ServerSocketEventMessage{
 		Event: ServerSocketEventLobbyOwner,
 		Data: ServerSocketEventData{
-			OwnerNickname: &nickname,
+			ConnectedPlayerNickname: &nickname,
+		},
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessagePlayerConnected(nickname string) []byte {
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventPlayerConnected,
+		Data: ServerSocketEventData{
+			ConnectedPlayerNickname: &nickname,
+		},
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessagePlayerDisconnected(nickname string) []byte {
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventPlayerDisconnected,
+		Data: ServerSocketEventData{
+			DisconnectedPlayerNickname: &nickname,
 		},
 	}
 

@@ -144,16 +144,19 @@ func (l *lobby) ForwardMessage(msg Message) {
 
 func (l *lobby) JoinLobby(c Client) {
 	l.Join <- c
-	
+
 	if l.Owner == nil {
 		l.Owner = c
 		l.Broadcast <- actions.ServerSocketEventMessageLobbyOwner(c.GetNickname())
+	} else {
+		l.Broadcast <- actions.ServerSocketEventMessagePlayerConnected(c.GetNickname())
 	}
-
 }
 
 func (l *lobby) LeaveLobby(c Client) {
 	l.Leave <- c
+
+	l.Broadcast <- actions.ServerSocketEventMessagePlayerDisconnected(c.GetNickname())
 }
 
 func (l *lobby) GetOwnerID() uuid.UUID {
