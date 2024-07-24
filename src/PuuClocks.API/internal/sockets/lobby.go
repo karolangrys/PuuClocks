@@ -13,6 +13,7 @@ import (
 type Lobby interface {
 	GetID() uuid.UUID
 	GetOwnerID() uuid.UUID
+	GetPlayersNicknamesWithout(string) []string
 
 	JoinLobby(Client)
 	LeaveLobby(Client)
@@ -151,6 +152,9 @@ func (l *lobby) JoinLobby(c Client) {
 	} else {
 		l.Broadcast <- actions.ServerSocketEventMessagePlayerConnected(c.GetNickname())
 	}
+
+	currentPlayers := l.GetPlayersNicknamesWithout(c.GetNickname())
+	c.SendMessage(actions.ServerSocketEventMessageCurrentPlayers(currentPlayers))
 }
 
 func (l *lobby) LeaveLobby(c Client) {
@@ -161,4 +165,17 @@ func (l *lobby) LeaveLobby(c Client) {
 
 func (l *lobby) GetOwnerID() uuid.UUID {
 	return l.Owner.GetID()
+}
+
+func (l *lobby) GetPlayersNicknamesWithout(nickname string) []string {
+	var opponents []string
+
+	for c := range l.Clients{
+		n := c.GetNickname()
+		if n != nickname{
+			opponents = append(opponents, n)
+		}
+	}
+
+	return opponents
 }

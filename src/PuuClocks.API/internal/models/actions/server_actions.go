@@ -10,11 +10,13 @@ var (
 	ServerSocketEventNewPlayer          ServerSocketEvent = "new-player"
 	ServerSocketEventPlayerConnected    ServerSocketEvent = "player-connected"
 	ServerSocketEventPlayerDisconnected ServerSocketEvent = "player-disconnected"
+	ServerSocketEventCurrentPlayers     ServerSocketEvent = "current-players"
 )
 
 type ServerSocketEventData struct {
-	ConnectedPlayerNickname    *string `json:",omitempty"`
-	DisconnectedPlayerNickname *string `json:",omitempty"`
+	ConnectedPlayerNickname    *string   `json:",omitempty"`
+	DisconnectedPlayerNickname *string   `json:",omitempty"`
+	CurrentPlayers             []string `json:",omitempty"`
 }
 
 type ServerSocketEventMessage struct {
@@ -72,6 +74,22 @@ func ServerSocketEventMessagePlayerDisconnected(nickname string) []byte {
 		Event: ServerSocketEventPlayerDisconnected,
 		Data: ServerSocketEventData{
 			DisconnectedPlayerNickname: &nickname,
+		},
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessageCurrentPlayers(currentPlayerNicknames []string) []byte {
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventCurrentPlayers,
+		Data: ServerSocketEventData{
+			CurrentPlayers: currentPlayerNicknames,
 		},
 	}
 
