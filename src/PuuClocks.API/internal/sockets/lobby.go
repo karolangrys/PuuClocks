@@ -115,6 +115,7 @@ func (l *lobby) run() {
 				}
 
 				l.Broadcast <- actions.ServerSocketEventMessageUserMadeAction(action, client.GetNickname())
+				l.Broadcast <- actions.ServerSocketEventMessageAvailableUserActions(l.Game.State)
 
 			case actions.ActionRelatedLobby:
 				switch action.Type {
@@ -137,6 +138,7 @@ func (l *lobby) run() {
 
 					l.Game = g
 					l.Broadcast <- actions.ServerSocketEventMessageStartGame()
+					l.Broadcast <- actions.ServerSocketEventMessageAvailableUserActions(l.Game.State)
 				}
 			}
 
