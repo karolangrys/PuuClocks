@@ -2,18 +2,20 @@ package actions
 
 import (
 	"encoding/json"
+	"puuclocks/internal/models"
 )
 
 type ServerSocketEvent string
 
 var (
-	ServerSocketEventGameStarting       ServerSocketEvent = "game-starting"
-	ServerSocketEventLobbyOwner         ServerSocketEvent = "lobby-owner"
-	ServerSocketEventNewPlayer          ServerSocketEvent = "new-player"
-	ServerSocketEventPlayerConnected    ServerSocketEvent = "player-connected"
-	ServerSocketEventPlayerDisconnected ServerSocketEvent = "player-disconnected"
-	ServerSocketEventCurrentPlayers     ServerSocketEvent = "current-players"
-	ServerSocketEventUserMadeAction     ServerSocketEvent = "user-action"
+	ServerSocketEventGameStarting         ServerSocketEvent = "game-starting"
+	ServerSocketEventLobbyOwner           ServerSocketEvent = "lobby-owner"
+	ServerSocketEventNewPlayer            ServerSocketEvent = "new-player"
+	ServerSocketEventPlayerConnected      ServerSocketEvent = "player-connected"
+	ServerSocketEventPlayerDisconnected   ServerSocketEvent = "player-disconnected"
+	ServerSocketEventCurrentPlayers       ServerSocketEvent = "current-players"
+	ServerSocketEventUserMadeAction       ServerSocketEvent = "user-action"
+	ServerSocketEventAvailableUserActions ServerSocketEvent = "available-user-actions"
 )
 
 type ServerSocketEventData struct {
@@ -21,6 +23,7 @@ type ServerSocketEventData struct {
 	DisconnectedPlayerNickname *string                              `json:",omitempty"`
 	CurrentPlayers             []string                             `json:",omitempty"`
 	ActionMade                 *ServerSocketEventDataUserMadeAction `json:",omitempty"`
+	AvailableActions           []ActionType                         `json:",omitempty"`
 }
 
 type ServerSocketEventDataUserMadeAction struct {
@@ -120,6 +123,31 @@ func ServerSocketEventMessageUserMadeAction(action Action, userNickname string) 
 				ActionType: action.GetType(),
 				Data:       action.GetData(),
 			},
+		},
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessageAvailableUserActions(gameState models.GameState) []byte {
+	var availableActions []ActionType
+
+	switch gameState {
+	case models.GameStateReportTime:
+		availableActions = []ActionType{ActionTypeReportTime, ActionTypeReportError}
+	case models.GameStateSynchronization, models.GameStateAction:
+		availableActions = []ActionType{ActionTypeReportError, ActionTypeSynchronization}
+	}
+
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventAvailableUserActions,
+		Data: ServerSocketEventData{
+			AvailableActions: availableActions,
 		},
 	}
 
