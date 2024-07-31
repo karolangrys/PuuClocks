@@ -13,6 +13,7 @@ import (
 type Lobby interface {
 	GetID() uuid.UUID
 	GetOwnerID() uuid.UUID
+	GetClientBySocketID(socketID uuid.UUID) Client
 	GetPlayersNicknamesWithout(string) []string
 
 	JoinLobby(Client)
@@ -98,11 +99,23 @@ func (l *lobby) run() {
 
 			switch *actionRelated {
 			case actions.ActionRelatedGameplay:
-				_, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
+				wasPerformed, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
 				if err != nil {
 					fmt.Printf("Couldn't process action %v: %v", *action, err)
 					break
 				}
+
+				if !wasPerformed {
+					break
+				}
+
+				client := l.GetClientBySocketID(*action.Data.ReporterID)
+				if client == nil {
+					fmt.Printf("Couldn't find client responsible for %v: lobby %d", *action, l.ID)
+				}
+
+				l.Broadcast <- actions.ServerSocketEventMessageUserMadeAction(action, client.GetNickname())
+
 			case actions.ActionRelatedLobby:
 				switch action.Type {
 				case actions.ActionTypeStartGame:
@@ -178,4 +191,13 @@ func (l *lobby) GetPlayersNicknamesWithout(nickname string) []string {
 	}
 
 	return opponents
+}
+
+func (l *lobby) GetClientBySocketID(socketID uuid.UUID) Client {
+	for c := range l.Clients {
+		if c.GetID() == socketID {
+			return c
+		}
+	}
+	return nil
 }

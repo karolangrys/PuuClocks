@@ -1,6 +1,8 @@
 package actions
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type ServerSocketEvent string
 
@@ -11,12 +13,20 @@ var (
 	ServerSocketEventPlayerConnected    ServerSocketEvent = "player-connected"
 	ServerSocketEventPlayerDisconnected ServerSocketEvent = "player-disconnected"
 	ServerSocketEventCurrentPlayers     ServerSocketEvent = "current-players"
+	ServerSocketEventUserMadeAction     ServerSocketEvent = "user-action"
 )
 
 type ServerSocketEventData struct {
-	ConnectedPlayerNickname    *string  `json:",omitempty"`
-	DisconnectedPlayerNickname *string  `json:",omitempty"`
-	CurrentPlayers             []string `json:",omitempty"`
+	ConnectedPlayerNickname    *string                              `json:",omitempty"`
+	DisconnectedPlayerNickname *string                              `json:",omitempty"`
+	CurrentPlayers             []string                             `json:",omitempty"`
+	ActionMade                 *ServerSocketEventDataUserMadeAction `json:",omitempty"`
+}
+
+type ServerSocketEventDataUserMadeAction struct {
+	Nickname   string
+	ActionType ActionType
+	Data       ActionData
 }
 
 type ServerSocketEventMessage struct {
@@ -90,6 +100,26 @@ func ServerSocketEventMessageCurrentPlayers(currentPlayerNicknames []string) []b
 		Event: ServerSocketEventCurrentPlayers,
 		Data: ServerSocketEventData{
 			CurrentPlayers: currentPlayerNicknames,
+		},
+	}
+
+	r, err := json.Marshal(message)
+	if err != nil {
+		return []byte("")
+	}
+
+	return r
+}
+
+func ServerSocketEventMessageUserMadeAction(action Action, userNickname string) []byte {
+	message := ServerSocketEventMessage{
+		Event: ServerSocketEventUserMadeAction,
+		Data: ServerSocketEventData{
+			ActionMade: &ServerSocketEventDataUserMadeAction{
+				Nickname:   userNickname,
+				ActionType: action.GetType(),
+				Data:       action.GetData(),
+			},
 		},
 	}
 
