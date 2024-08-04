@@ -3,8 +3,8 @@ package server
 import (
 	"puuclocks/internal/log"
 	"puuclocks/internal/repository"
+	"puuclocks/internal/server/sockets"
 	"puuclocks/internal/service"
-	"puuclocks/internal/sockets"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

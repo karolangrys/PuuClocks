@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"puuclocks/internal/repository"
+	"puuclocks/internal/server/sockets"
 	"puuclocks/internal/service"
-	"puuclocks/internal/sockets"
 
 	"github.com/gin-gonic/gin"
 )
