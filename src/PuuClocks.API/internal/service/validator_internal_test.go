@@ -1,13 +1,14 @@
-package game
+package service_test
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.uber.org/mock/gomock"
 
+	"puuclocks/actions"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
+	"puuclocks/internal/service"
 )
 
 var _ = Describe("Validator", Ordered, func() {
@@ -25,7 +26,7 @@ var _ = Describe("Validator", Ordered, func() {
 		startGame           *actions.MockAction
 		synchronizationRule *actions.MockAction
 
-		validator Validator
+		validator service.Validator
 	)
 
 	BeforeEach(func() {
@@ -49,7 +50,7 @@ var _ = Describe("Validator", Ordered, func() {
 		startGame.EXPECT().GetType().Return(actions.ActionTypeStartGame).AnyTimes()
 		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronization).AnyTimes()
 
-		validator = newValidator()
+		validator = service.NewService().Validator()
 	})
 
 	Context("Game state equal to report time", func() {

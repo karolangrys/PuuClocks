@@ -2,10 +2,10 @@ package sockets
 
 import (
 	"fmt"
+	"puuclocks/actions"
+	"puuclocks/internal/concluder"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 	"puuclocks/internal/service"
-	"puuclocks/internal/service/game"
 
 	"github.com/google/uuid"
 )
@@ -35,7 +35,7 @@ type lobby struct {
 	Clients map[Client]bool
 
 	Game         *models.Game
-	Gameplay     game.GameLoop
+	Concluder    concluder.Concluder
 	LobbyHandler service.LobbyHandler
 
 	Settings Settings
@@ -61,7 +61,7 @@ func NewLobby(services service.Service) Lobby {
 		Clients:   make(map[Client]bool),
 		Broadcast: make(chan []byte, maxMessageAmount),
 
-		Gameplay:     services.GameLoop(),
+		Concluder:    concluder.NewConcluder(services),
 		LobbyHandler: services.LobbyHandler(),
 	}
 
@@ -99,7 +99,7 @@ func (l *lobby) run() {
 
 			switch *actionRelated {
 			case actions.ActionRelatedGameplay:
-				wasPerformed, err := l.Gameplay.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
+				wasPerformed, err := l.Concluder.ProcessAction(l.Game, msg.SocketID, *action, l.Broadcast)
 				if err != nil {
 					fmt.Printf("Couldn't process action %v: %v", *action, err)
 					break

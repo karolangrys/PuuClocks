@@ -1,4 +1,4 @@
-package game
+package service_test
 
 import (
 	"fmt"
@@ -8,9 +8,10 @@ import (
 	. "github.com/onsi/gomega"
 	"go.uber.org/mock/gomock"
 
+	"puuclocks/actions"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
+	"puuclocks/internal/service"
 )
 
 var _ = Describe("FoulChecker", func() {
@@ -26,7 +27,7 @@ var _ = Describe("FoulChecker", func() {
 		reportTime          *actions.MockAction
 		synchronizationRule *actions.MockAction
 
-		foulChecker FoulChecker
+		foulChecker service.FoulChecker
 	)
 
 	BeforeEach(func() {
@@ -47,7 +48,7 @@ var _ = Describe("FoulChecker", func() {
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 		synchronizationRule.EXPECT().GetType().Return(actions.ActionTypeSynchronization).AnyTimes()
 
-		foulChecker = newFoulChecker()
+		foulChecker = service.NewService().FoulChecker()
 	})
 
 	Context("shouldn't execute instead return nil at once - ", func() {

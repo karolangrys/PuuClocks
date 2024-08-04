@@ -1,4 +1,4 @@
-package game_test
+package service_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestService(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Game Suite")
+	RunSpecs(t, "Service Suite")
 }

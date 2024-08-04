@@ -6,10 +6,10 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"puuclocks/internal/models/actions"
+	"puuclocks/actions"
 )
 
-var _ = Describe("Action", Ordered, func() {
+var _ = Describe("User Actions", Ordered, func() {
 	Describe("ValidateUserProvidedAction", func() {
 		Describe("Type StartGame", func() {
 			It("should return nil due to containing data", func() {
