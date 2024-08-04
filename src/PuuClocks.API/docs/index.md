@@ -9,6 +9,7 @@ TODO: Add api docs
 - <span style="font-size:1.5em;">**docs**</span>: documentation
 - <span style="font-size:1.5em;">**gen**</span>: genarated open-api files
 - <span style="font-size:1.5em;">**actions**</span>: definitions of websocket actions for both user and server
+- <span style="font-size:1.5em;">**seed**</span>: manualy written sql schema for database
 - <span style="font-size:1.5em;">**internal**</span> ( things which are internal logic and shouldn't be exposed outside the project )
   - <span style="font-size:1.2em;">**config**</span>: json config file - later will be used to set up feature flags
   - <span style="font-size:1.2em;">**consts**</span>: all consts needed inside project
