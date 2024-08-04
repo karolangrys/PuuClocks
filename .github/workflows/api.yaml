@@ -1,4 +1,4 @@
-name: Puu Clocks tests
+name: Puu Clocks API
 
 on: 
   pull_request:
