@@ -1,9 +1,9 @@
-package game
+package service
 
 import (
+	"puuclocks/actions"
 	"puuclocks/internal/common"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 
 	"github.com/google/uuid"
 )
@@ -12,8 +12,7 @@ type OutcomeEvaluator interface {
 	ShouldPunishOrAward(game *models.Game, socketID uuid.UUID, action actions.Action, broadcast chan []byte)
 }
 
-type outcomeEvaluator struct {
-}
+type outcomeEvaluator struct{}
 
 func newOutcomeEvaluator() OutcomeEvaluator {
 	return &outcomeEvaluator{}

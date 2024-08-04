@@ -1,9 +1,9 @@
-package game
+package service
 
 import (
 	"fmt"
+	"puuclocks/actions"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 
 	"github.com/google/uuid"
 )

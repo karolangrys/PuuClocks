@@ -1,4 +1,4 @@
-package game
+package service_test
 
 import (
 	"fmt"
@@ -8,9 +8,10 @@ import (
 	. "github.com/onsi/gomega"
 	"go.uber.org/mock/gomock"
 
+	"puuclocks/actions"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 	"puuclocks/internal/repository"
+	"puuclocks/internal/service"
 )
 
 var _ = Describe("ActionExecutor", func() {
@@ -22,7 +23,7 @@ var _ = Describe("ActionExecutor", func() {
 
 		reportTime *actions.MockAction
 
-		actionExecutor ActionExecutor
+		actionExecutor service.ActionExecutor
 	)
 
 	BeforeEach(func() {
@@ -37,7 +38,7 @@ var _ = Describe("ActionExecutor", func() {
 
 		reportTime.EXPECT().GetType().Return(actions.ActionTypeReportTime).AnyTimes()
 
-		actionExecutor = newActionExecuter()
+		actionExecutor = service.NewService().ActionExecutor()
 	})
 
 	Context("Action report time", func() {

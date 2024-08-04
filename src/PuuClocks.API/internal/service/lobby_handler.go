@@ -1,8 +1,8 @@
 package service
 
 import (
+	"puuclocks/actions"
 	"puuclocks/internal/models"
-	"puuclocks/internal/models/actions"
 
 	"github.com/google/uuid"
 )
