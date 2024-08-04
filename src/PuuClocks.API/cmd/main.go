@@ -6,8 +6,8 @@ import (
 	"puuclocks/internal/log"
 	"puuclocks/internal/repository"
 	"puuclocks/internal/server"
+	"puuclocks/internal/server/sockets"
 	"puuclocks/internal/service"
-	"puuclocks/internal/sockets"
 	"time"
 
 	"github.com/gin-contrib/cors"
