@@ -46,7 +46,7 @@ jobs:
         run: go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
       - name: Start app
-        run: docker-compose -f docker-compose-github.yaml up -d
+        run: docker compose -f ./docker-compose-github.yaml up -d
 
       - name: Wait for app to be up
         run: timeout 180 bash -c ../../.github/scripts/app_check.sh
