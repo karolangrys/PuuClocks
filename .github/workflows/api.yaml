@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/PuuClocks.API
+        working-directory: ./src/PuuClocks.API.GO
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/PuuClocks.API
+        working-directory: ./src/PuuClocks.API.GO
 
     steps:
       - uses: actions/checkout@v3
@@ -58,4 +58,4 @@ jobs:
         uses: test-summary/action@v1
         with:
           paths: |
-             ./src/PuuClocks.API/report.xml
+             ./src/PuuClocks.API.GO/report.xml
