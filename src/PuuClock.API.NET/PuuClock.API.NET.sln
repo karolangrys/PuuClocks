@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35004.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuuClock.API.NET", "PuuClock.API.NET.csproj", "{70155FDD-AA2C-4B5C-8E2C-6BEF9A2D18DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70155FDD-AA2C-4B5C-8E2C-6BEF9A2D18DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70155FDD-AA2C-4B5C-8E2C-6BEF9A2D18DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70155FDD-AA2C-4B5C-8E2C-6BEF9A2D18DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70155FDD-AA2C-4B5C-8E2C-6BEF9A2D18DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {85B3EAF1-42B2-41A5-B78A-92C6FD418209}
+	EndGlobalSection
+EndGlobal

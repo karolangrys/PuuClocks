@@ -1,5 +1,16 @@
 {
-  "CreateLobby": "Utwórz pokój",
-  "JoinLobby": "Dołącz do pokoju",
-  "SelectLanguage": "Wybierz język"
+  "AppSettings": {
+    "SelectLanguage": "Wybierz język",
+    "ToggleTheme": "Przełącz motyw",
+    "ColorTheme": {
+      "Light": "Jasny",
+      "Dark": "Ciemny",
+      "System": "Systemowy"
+    }
+  },
+  "Lobby": {
+    "CreateLobby": "Utwórz pokój",
+    "JoinLobby": "Dołącz do pokoju",
+    "LobbyId": "ID pokoju"
+  }
 }

@@ -1,0 +1,6 @@
+@PuuClock.API.NET_HostAddress = http://localhost:5273
+
+GET {{PuuClock.API.NET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
